@@ -44,13 +44,13 @@ generate_keys() {
 	config_get location   "$cfg" location
 	config_get commonname "$cfg" commonname
 
-	# Prefer px5g for certificate generation (existence evaluated last)
+## Prefer px5g for certificate generation (existence evaluated last)
 	local GENKEY_CMD=""
 	local UNIQUEID=$(dd if=/dev/urandom bs=1 count=4 | hexdump -e '1/1 "%02x"')
 	[ -x "$OPENSSL_BIN" ] && GENKEY_CMD="$OPENSSL_BIN req -x509 -sha256 -outform der -nodes"
 	[ -x "$PX5G_BIN" ] && GENKEY_CMD="$PX5G_BIN selfsigned -der"
 	[ -n "$GENKEY_CMD" ] && {
-		$GENKEY_CMD \
+#	$GENKEY_CMD \
 			-days ${days:-730} -newkey rsa:${bits:-2048} -keyout "${UHTTPD_KEY}.new" -out "${UHTTPD_CERT}.new" \
 			-subj /C="${country:-ZZ}"/ST="${state:-Somewhere}"/L="${location:-Unknown}"/O="${commonname:-OpenWrt}$UNIQUEID"/CN="${commonname:-OpenWrt}"
 		sync
@@ -203,3 +203,4 @@ start_service() {
 	config_load uhttpd
 	config_foreach start_instance uhttpd
 }
+
